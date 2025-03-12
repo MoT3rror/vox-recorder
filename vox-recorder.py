@@ -41,6 +41,8 @@ MAXIMUMVOL = 32767
 CHUNK_SIZE = 1024
 FORMAT = pyaudio.paInt16
 
+AUDIO_DEVICE = 3
+
 class suppress_stdout_stderr(object):
     def __enter__(self):
         self.outnull_file = open(os.devnull, 'w')
@@ -128,6 +130,7 @@ def show_status(snd_data, record_started, record_started_stamp, wav_filename):
 
 def voice_detected(snd_data):
     """Returns 'True' if sound peaked above the 'silent' threshold"""
+
     return max(snd_data) > SILENCE_THRESHOLD
 
 def normalize(snd_data):
@@ -167,7 +170,7 @@ def wait_for_activity():
     with suppress_stdout_stderr():
         """Listen sound and quit when sound is detected"""
         p = pyaudio.PyAudio()
-        stream = p.open(format=FORMAT, channels=1, rate=RATE, input=True, frames_per_buffer=CHUNK_SIZE)
+        stream = p.open(format=FORMAT, channels=1, rate=RATE, input=True, input_device_index=AUDIO_DEVICE, frames_per_buffer=CHUNK_SIZE)
     
     try:
         while True:
@@ -189,7 +192,7 @@ def record_audio():
     with suppress_stdout_stderr():
         """Record audio when activity is detected"""
         p = pyaudio.PyAudio()
-        stream = p.open(format=FORMAT, channels=1, rate=RATE, input=True, frames_per_buffer=CHUNK_SIZE)
+        stream = p.open(format=FORMAT, channels=1, rate=RATE, input=True, input_device_index=AUDIO_DEVICE, frames_per_buffer=CHUNK_SIZE)
         snd_data = array('h')
         record_started = False
         last_voice_stamp = 0
